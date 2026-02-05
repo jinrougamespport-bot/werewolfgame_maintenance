@@ -23,17 +23,29 @@
         Web Werewolf System Maintenance
     </div>
 
-    <script>
-        // あなたのngrokのURLに書き換えてください
-        const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
+<script>
+    const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
 
-        fetch(ngrokUrl, { mode: 'no-cors' })
-            .then(() => {
-                window.location.href = ngrokUrl;
-            })
-            .catch(() => {
-                console.log("Raspberry Pi is offline.");
-            });
-    </script>
+    // 5秒以内に返事がなければタイムアウトさせる設定
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    fetch(ngrokUrl, { 
+        mode: 'no-cors',
+        signal: controller.signal 
+    })
+    .then(() => {
+        // ngrokが生きていれば（ここが重要）、URLをチェック
+        // ただし、ngrokのエラーページを拾わないように少し工夫が必要な場合があります
+        // 今回はシンプルに、成功時のみリダイレクト
+        window.location.href = ngrokUrl;
+    })
+    .catch((error) => {
+        // ngrokがオフライン（3200エラー等）なら、ここに来る
+        // 何もしないことで、Renderの「メンテナンス画面」が表示され続けます
+        console.log("ラズパイはオフラインです。メンテ画面を維持します。");
+    });
+</script>
 </body>
+
 </html>
