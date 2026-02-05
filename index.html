@@ -26,26 +26,24 @@
 <script>
     const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
 
-    // 5秒以内に返事がなければタイムアウトさせる設定
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    // ページの読み込みが終わってからチェック開始
+    window.onload = function() {
+        console.log("ラズパイの生存確認中...");
 
-    fetch(ngrokUrl, { 
-        mode: 'no-cors',
-        signal: controller.signal 
-    })
-    .then(() => {
-        // ngrokが生きていれば（ここが重要）、URLをチェック
-        // ただし、ngrokのエラーページを拾わないように少し工夫が必要な場合があります
-        // 今回はシンプルに、成功時のみリダイレクト
-        window.location.href = ngrokUrl;
-    })
-    .catch((error) => {
-        // ngrokがオフライン（3200エラー等）なら、ここに来る
-        // 何もしないことで、Renderの「メンテナンス画面」が表示され続けます
-        console.log("ラズパイはオフラインです。メンテ画面を維持します。");
-    });
+        fetch(ngrokUrl, { mode: 'no-cors' })
+            .then(() => {
+                // 応答があった場合のみ、ゲーム画面へ飛ばす
+                console.log("ラズパイ発見！転送します。");
+                window.location.href = ngrokUrl;
+            })
+            .catch(() => {
+                // 応答がない（オフライン）なら、何もしない
+                // これにより、Render上の「メンテナンス画面」がそのまま表示され続けます
+                console.log("ラズパイはオフラインです。看板を表示し続けます。");
+            });
+    };
 </script>
 </body>
 
 </html>
+
