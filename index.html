@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>メンテナンス中</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="maintenance-container">
+        <img src="favicon.ico" class="maintenance-icon-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+        <div style="display:none; font-size: 64px; margin-bottom: 20px;">⚙️</div>
+        
+        <h1>現在メンテナンス中です</h1>
+        <p>
+            更新が終わり次第プレイできるようになります<br>
+            もうしばらくお待ちください
+        </p>
+    </div>
+
+    <div class="maintenance-footer">
+        Web Werewolf System Maintenance
+    </div>
+
+    <script>
+        // あなたのngrokのURLに書き換えてください
+        const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
+
+        fetch(ngrokUrl, { mode: 'no-cors' })
+            .then(() => {
+                window.location.href = ngrokUrl;
+            })
+            .catch(() => {
+                console.log("Raspberry Pi is offline.");
+            });
+    </script>
+</body>
+</html>
