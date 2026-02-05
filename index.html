@@ -25,36 +25,43 @@
 
 <div id="play-sector" style="display: none; margin-top: 20px;">
     <button onclick="location.href='https://yawnful-oligarchic-von.ngrok-free.dev'" 
-            style="padding: 15px 30px; font-size: 18px; cursor: pointer; background: #fff; color: #000; border: none; border-radius: 5px; font-weight: bold;">
+            style="padding: 15px 30px; font-size: 18px; cursor: pointer; background: #fff; color: #000; border: none; border-radius: 5px; font-weight: bold; box-shadow: 0 4px 15px rgba(255,255,255,0.3);">
         ゲームをプレイする
     </button>
 </div>
 
 <script>
+    // あなたのngrok URL
     const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
+    // ラズパイが動いている時だけ存在するファイルのパス（キャッシュ防止のランダム文字付き）
+    const checkImageUrl = ngrokUrl + "/static/favicon.ico?t=" + new Date().getTime();
 
-    // ラズパイが本当に「ゲーム画面」を返せる状態かチェック
     function checkServer() {
-        fetch(ngrokUrl, { mode: 'no-cors' })
-        .then(() => {
-            // 応答（ngrokの入り口）があればボタンを出す
+        const img = new Image();
+        
+        // 画像が正常に読み込めた ＝ ラズパイのapp.pyが応答している
+        img.onload = function() {
             document.getElementById('play-sector').style.display = 'block';
-            // ついでに「メンテナンス中」の文字を「準備完了」に変えることも可能
-            document.querySelector('h1').innerText = "サーバーが起動しました！";
-        })
-        .catch(() => {
-            // 失敗したらそのまま（ボタンは出ない）
-            console.log("Offline...");
-        });
+            document.querySelector('h1').innerText = "サーバー稼働中！";
+        };
+
+        // 読み込めなかった ＝ ngrokがオフライン、またはエラーページを返している
+        img.onerror = function() {
+            document.getElementById('play-sector').style.display = 'none';
+            document.querySelector('h1').innerText = "現在メンテナンス中です";
+        };
+
+        img.src = checkImageUrl;
     }
 
-    // ページを開いた時と、その後30秒おきにチェック（自動でボタンが出るようにする）
+    // 起動時と10秒おきに自動チェック
     checkServer();
-    setInterval(checkServer, 30000);
+    setInterval(checkServer, 10000);
 </script>
 </body>
 
 </html>
+
 
 
 
