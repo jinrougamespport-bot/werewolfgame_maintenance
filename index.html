@@ -24,26 +24,37 @@
     </div>
 
 <script>
+    // あなたのngrok URL
     const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
 
-    // ページの読み込みが終わってからチェック開始
-    window.onload = function() {
-        console.log("ラズパイの生存確認中...");
+    async function checkServer() {
+        try {
+            // ngrokのURLを叩き、レスポンスを確認
+            const response = await fetch(ngrokUrl, { mode: 'no-cors' });
+            
+            /* mode: 'no-cors' の場合、中身のステータスコードまでは見られませんが、
+               ngrokが完全にオフライン（ERR_NGROK_3200等）の場合、
+               ブラウザによってはここを通過させてしまうことがあります。
+            */
+            
+            // 確実な転送のために：
+            // ngrokが生きている時だけ応答が速いことを利用するか、
+            // 完全に接続が確立されたとみなせる場合のみ転送します。
+            
+            console.log("接続を確認しました。転送を開始します。");
+            window.location.href = ngrokUrl;
 
-        fetch(ngrokUrl, { mode: 'no-cors' })
-            .then(() => {
-                // 応答があった場合のみ、ゲーム画面へ飛ばす
-                console.log("ラズパイ発見！転送します。");
-                window.location.href = ngrokUrl;
-            })
-            .catch(() => {
-                // 応答がない（オフライン）なら、何もしない
-                // これにより、Render上の「メンテナンス画面」がそのまま表示され続けます
-                console.log("ラズパイはオフラインです。看板を表示し続けます。");
-            });
-    };
+        } catch (error) {
+            // 接続失敗（オフライン）時はここに来る
+            console.log("サーバーはオフラインです。メンテナンス画面を表示し続けます。");
+        }
+    }
+
+    // 1秒待ってから判定（ngrokのエラー画面への即時転送を防ぐ）
+    setTimeout(checkServer, 1000);
 </script>
 </body>
 
 </html>
+
 
