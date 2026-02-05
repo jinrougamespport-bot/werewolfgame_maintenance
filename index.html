@@ -23,38 +23,38 @@
         Web Werewolf System Maintenance
     </div>
 
+<div id="play-sector" style="display: none; margin-top: 20px;">
+    <button onclick="location.href='https://yawnful-oligarchic-von.ngrok-free.dev'" 
+            style="padding: 15px 30px; font-size: 18px; cursor: pointer; background: #fff; color: #000; border: none; border-radius: 5px; font-weight: bold;">
+        ゲームをプレイする
+    </button>
+</div>
+
 <script>
-    // あなたのngrok URL
     const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
 
-    async function checkServer() {
-        try {
-            // ngrokのURLを叩き、レスポンスを確認
-            const response = await fetch(ngrokUrl, { mode: 'no-cors' });
-            
-            /* mode: 'no-cors' の場合、中身のステータスコードまでは見られませんが、
-               ngrokが完全にオフライン（ERR_NGROK_3200等）の場合、
-               ブラウザによってはここを通過させてしまうことがあります。
-            */
-            
-            // 確実な転送のために：
-            // ngrokが生きている時だけ応答が速いことを利用するか、
-            // 完全に接続が確立されたとみなせる場合のみ転送します。
-            
-            console.log("接続を確認しました。転送を開始します。");
-            window.location.href = ngrokUrl;
-
-        } catch (error) {
-            // 接続失敗（オフライン）時はここに来る
-            console.log("サーバーはオフラインです。メンテナンス画面を表示し続けます。");
-        }
+    // ラズパイが本当に「ゲーム画面」を返せる状態かチェック
+    function checkServer() {
+        fetch(ngrokUrl, { mode: 'no-cors' })
+        .then(() => {
+            // 応答（ngrokの入り口）があればボタンを出す
+            document.getElementById('play-sector').style.display = 'block';
+            // ついでに「メンテナンス中」の文字を「準備完了」に変えることも可能
+            document.querySelector('h1').innerText = "サーバーが起動しました！";
+        })
+        .catch(() => {
+            // 失敗したらそのまま（ボタンは出ない）
+            console.log("Offline...");
+        });
     }
 
-    // 1秒待ってから判定（ngrokのエラー画面への即時転送を防ぐ）
-    setTimeout(checkServer, 1000);
+    // ページを開いた時と、その後30秒おきにチェック（自動でボタンが出るようにする）
+    checkServer();
+    setInterval(checkServer, 30000);
 </script>
 </body>
 
 </html>
+
 
 
