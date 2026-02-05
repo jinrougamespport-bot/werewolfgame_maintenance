@@ -31,36 +31,37 @@
 </div>
 
 <script>
-    // あなたのngrok URL
     const ngrokUrl = "https://yawnful-oligarchic-von.ngrok-free.dev";
-    // ラズパイが動いている時だけ存在するファイルのパス（キャッシュ防止のランダム文字付き）
+    // ラズパイが動いている時だけ存在するファイルのパス
     const checkImageUrl = ngrokUrl + "/static/favicon.ico?t=" + new Date().getTime();
 
-    function checkServer() {
+    function checkAndRedirect() {
         const img = new Image();
         
-        // 画像が正常に読み込めた ＝ ラズパイのapp.pyが応答している
+        // 画像が読み込めた ＝ ラズパイが完全に生きている！
         img.onload = function() {
-            document.getElementById('play-sector').style.display = 'block';
-            document.querySelector('h1').innerText = "サーバー稼働中！";
+            console.log("サーバーを確認しました。転送します...");
+            window.location.href = ngrokUrl;
         };
 
-        // 読み込めなかった ＝ ngrokがオフライン、またはエラーページを返している
+        // 読み込めない ＝ メンテ中、またはngrokエラー画面
         img.onerror = function() {
-            document.getElementById('play-sector').style.display = 'none';
-            document.querySelector('h1').innerText = "現在メンテナンス中です";
+            console.log("サーバーはまだオフラインです。");
         };
 
         img.src = checkImageUrl;
     }
 
-    // 起動時と10秒おきに自動チェック
-    checkServer();
-    setInterval(checkServer, 10000);
+    // ページを開いた瞬間にチェック
+    checkAndRedirect();
+
+    // その後も5秒ごとにチェックし続ける（起動した瞬間に飛ばすため）
+    setInterval(checkAndRedirect, 5000);
 </script>
 </body>
 
 </html>
+
 
 
 
